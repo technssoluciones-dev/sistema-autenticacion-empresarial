@@ -10,8 +10,8 @@ Keycloak o AWS Cognito, que cualquier aplicación pueda integrar vía API.
 El desarrollo avanza por fases. Cada fase debe compilar, pasar sus tests y quedar documentada
 antes de iniciar la siguiente.
 
-- [x] **Fase 1 — Base del proyecto** ✅ (esta entrega)
-- [ ] Fase 2 — Arquitectura (Clean Architecture: domain / application / infrastructure / presentation)
+- [x] **Fase 1 — Base del proyecto** ✅
+- [x] **Fase 2 — Arquitectura (Clean Architecture)** ✅ (esta entrega)
 - [ ] Fase 3 — Dominio de Usuarios
 - [ ] Fase 4 — Autenticación (JWT + Refresh Tokens)
 - [ ] Fase 5 — Roles y Permisos (RBAC)
@@ -20,6 +20,21 @@ antes de iniciar la siguiente.
 - [ ] Fase 8 — Auditoría
 - [ ] Fase 9 — Testing (unit, integración, e2e, cobertura > 80%)
 - [ ] Fase 10 — DevOps (CI/CD con GitHub Actions)
+
+## Qué incluye la Fase 2
+
+- Bloques base de Clean Architecture en `src/shared/domain` (`Entity`, `AggregateRoot`,
+  `ValueObject`, `UniqueEntityId`, `DomainEvent`, jerarquía de `DomainException`) y en
+  `src/shared/application` (`Result<T, E>`, interfaz `UseCase`).
+- La regla de dependencia (`presentation → application → domain`, `infrastructure` implementa
+  interfaces de `domain`) está **forzada por ESLint**, no solo documentada — ver
+  [`docs/architecture.md`](docs/architecture.md) para el diagrama y el detalle de qué se
+  verificó manualmente.
+- El módulo `health` migrado al patrón: `CheckSystemHealthUseCase` en `application/`,
+  controller delgado en `presentation/controllers/` que solo delega, sin lógica propia.
+- Alias de path (`@shared/*`, `@modules/*`, `@config/*`, `@common/*`) activados de verdad:
+  se resuelven en desarrollo (`ts-node` vía `tsconfig-paths`) y se reescriben a rutas
+  relativas en el build de producción con `tsc-alias`, y están mapeados en Jest.
 
 ## Qué incluye la Fase 1
 
@@ -95,13 +110,19 @@ enterprise-auth/
 ├── src/
 │   ├── config/          # Variables de entorno tipadas y validadas (Joi)
 │   ├── modules/
-│   │   └── health/      # Health checks (liveness / readiness)
+│   │   └── health/
+│   │       ├── application/     # Casos de uso (CheckSystemHealthUseCase)
+│   │       ├── presentation/    # Controllers HTTP delgados
+│   │       └── health.module.ts
 │   ├── shared/
-│   │   ├── logger/      # Logging estructurado (Pino)
-│   │   └── filters/      # Filtro global de excepciones
-│   ├── common/          # (Fase 2) utilidades transversales
+│   │   ├── domain/       # Entity, AggregateRoot, ValueObject, DomainException...
+│   │   ├── application/  # Result<T,E>, interfaz UseCase
+│   │   ├── logger/       # Logging estructurado (Pino)
+│   │   └── filters/       # Filtro global de excepciones
 │   ├── app.module.ts
 │   └── main.ts
+├── docs/
+│   └── architecture.md  # Diagrama de dependencias entre capas
 ├── test/                # Tests e2e (Fase 9)
 ├── docker/
 │   └── Dockerfile.dev
@@ -111,9 +132,11 @@ enterprise-auth/
 └── README.md
 ```
 
-> A partir de la Fase 2, `src/` se reorganiza en capas de Clean Architecture:
-> `domain/`, `application/`, `infrastructure/` y `presentation/` por módulo de negocio
-> (`auth`, `users`, `roles`, `permissions`, `audit`).
+> A partir de la Fase 3, cada módulo de negocio (`users`, `auth`, `roles`, `permissions`,
+> `audit`) suma su propia carpeta `domain/` con entidades, Value Objects e interfaces de
+> repositorio, y `infrastructure/` con la implementación concreta sobre PostgreSQL.
+> `health` no tiene `domain/` propia porque no gestiona entidades de negocio — eso es
+> correcto, no todos los módulos necesitan las cuatro capas.
 
 ## Stack tecnológico
 

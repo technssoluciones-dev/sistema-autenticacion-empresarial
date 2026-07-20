@@ -1,17 +1,13 @@
 import { HealthController } from './health.controller';
-import { HealthCheckService, MemoryHealthIndicator, DiskHealthIndicator } from '@nestjs/terminus';
+import { CheckSystemHealthUseCase } from '../../application/check-system-health.use-case';
 
 describe('HealthController', () => {
   let controller: HealthController;
+  let useCase: { execute: jest.Mock };
 
   beforeEach(() => {
-    const health = {
-      check: jest.fn().mockResolvedValue({ status: 'ok' }),
-    } as unknown as HealthCheckService;
-    const memory = {} as MemoryHealthIndicator;
-    const disk = {} as DiskHealthIndicator;
-
-    controller = new HealthController(health, memory, disk);
+    useCase = { execute: jest.fn().mockResolvedValue({ status: 'ok' }) };
+    controller = new HealthController(useCase as unknown as CheckSystemHealthUseCase);
   });
 
   it('liveness responde con status ok', () => {
@@ -20,8 +16,9 @@ describe('HealthController', () => {
     expect(result.timestamp).toBeDefined();
   });
 
-  it('check delega en HealthCheckService.check', async () => {
+  it('check delega en CheckSystemHealthUseCase.execute', async () => {
     const result = await controller.check();
+    expect(useCase.execute).toHaveBeenCalledTimes(1);
     expect(result).toEqual({ status: 'ok' });
   });
 });
