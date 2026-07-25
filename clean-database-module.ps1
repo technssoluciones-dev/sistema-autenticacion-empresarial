@@ -1,17 +1,18 @@
+@'
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 /**
- * ConexiÃ³n a PostgreSQL vÃ­a TypeORM. Mismo patrÃ³n que `LoggerModule`:
+ * Conexión a PostgreSQL vía TypeORM. Mismo patrón que `LoggerModule`:
  * un `forRootAsync` que lee la config ya validada por Joi
- * (`env.validation.ts`) en vez de leer `process.env` directamente acÃ¡.
+ * (`env.validation.ts`) en vez de leer `process.env` directamente acá.
  *
- * `synchronize` NUNCA se deriva directamente de `DB_SYNC` en producciÃ³n,
+ * `synchronize` NUNCA se deriva directamente de `DB_SYNC` en producción,
  * aunque alguien lo deje en `true` en el `.env` de un servidor real:
- * `synchronize: true` en producciÃ³n puede borrar o alterar columnas con
- * datos reales sin pasar por una migraciÃ³n revisada. Se fuerza `false`
- * fuera de `development`/`test` sin excepciÃ³n.
+ * `synchronize: true` en producción puede borrar o alterar columnas con
+ * datos reales sin pasar por una migración revisada. Se fuerza `false`
+ * fuera de `development`/`test` sin excepción.
  */
 @Module({
   imports: [
@@ -38,3 +39,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   ],
 })
 export class DatabaseModule {}
+
+'@ | Out-File -Encoding utf8 src\infrastructure\database\database.module.ts
+$c = Get-Content -Raw src\infrastructure\database\database.module.ts
+[System.IO.File]::WriteAllText("$PWD\src\infrastructure\database\database.module.ts", $c, (New-Object System.Text.UTF8Encoding($false)))
