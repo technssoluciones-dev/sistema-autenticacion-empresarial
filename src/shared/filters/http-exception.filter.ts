@@ -7,6 +7,12 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import {
+  DomainException,
+  EntityNotFoundException,
+  BusinessRuleViolationException,
+  InvalidValueObjectException,
+} from '@shared/domain';
 
 interface ErrorResponseBody {
   statusCode: number;
@@ -15,6 +21,29 @@ interface ErrorResponseBody {
   method: string;
   message: string | string[];
   error: string;
+}
+
+/**
+ * Mapeo DomainException -> HTTP status. Vive acá (presentation) y no en
+ * domain, a propósito: el dominio no sabe que existe HTTP (ver
+ * `domain.exception.ts`). Orden por especificidad: `instanceof` de una
+ * subclase concreta antes que el fallback genérico.
+ */
+function mapDomainExceptionToStatus(exception: DomainException): HttpStatus {
+  if (exception instanceof EntityNotFoundException) {
+    return HttpStatus.NOT_FOUND; // 404
+  }
+  if (exception instanceof BusinessRuleViolationException) {
+    return HttpStatus.CONFLICT; // 409
+  }
+  if (exception instanceof InvalidValueObjectException) {
+    return HttpStatus.BAD_REQUEST; // 400
+  }
+  // Subclase de DomainException no contemplada explícitamente todavía:
+  // 422 es más honesto que un 500 (no es un fallo del servidor, es el
+  // dominio rechazando la operación) y visibiliza el caso sin ocultarlo
+  // como error interno.
+  return HttpStatus.UNPROCESSABLE_ENTITY; // 422
 }
 
 /**
@@ -31,21 +60,27 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     const isHttpException = exception instanceof HttpException;
-    const statusCode = isHttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+    const isDomainException = exception instanceof DomainException;
+
+    const statusCode = isHttpException
+      ? exception.getStatus()
+      : isDomainException
+        ? mapDomainExceptionToStatus(exception)
+        : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const exceptionResponse = isHttpException ? exception.getResponse() : null;
 
     const message =
       exceptionResponse && typeof exceptionResponse === 'object' && 'message' in exceptionResponse
         ? (exceptionResponse as { message: string | string[] }).message
-        : isHttpException
+        : isHttpException || isDomainException
           ? exception.message
           : 'Internal server error';
 
     const errorName =
       exceptionResponse && typeof exceptionResponse === 'object' && 'error' in exceptionResponse
         ? (exceptionResponse as { error: string }).error
-        : isHttpException
+        : isHttpException || isDomainException
           ? exception.name
           : 'InternalServerError';
 
