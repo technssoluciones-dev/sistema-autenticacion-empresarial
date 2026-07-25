@@ -25,3 +25,8 @@ npm-debug.log*
 
 # db
 *.sqlite
+
+# scripts de scaffolding locales
+apply-*.ps1
+clean-*.ps1
+debug-*.ps1
