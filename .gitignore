@@ -30,3 +30,5 @@ npm-debug.log*
 apply-*.ps1
 clean-*.ps1
 debug-*.ps1
+
+fix-*.ps1
