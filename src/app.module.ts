@@ -1,29 +1,19 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import appConfig from './config/app.config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import databaseConfig from './config/database.config';
-import jwtConfig from './config/jwt.config';
-import { envValidationSchema } from './config/env.validation';
-import { HealthModule } from './modules/health/health.module';
 import { UsersModule } from './modules/users/users.module';
-import { RolesModule } from './modules/roles/roles.module';
+import { HealthModule } from './modules/health/health.module';
+import { AuditModule } from './modules/audit/audit.module';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000,
-        limit: process.env.NODE_ENV === 'test' ? 1000 : 10,
-      },
-    ]),
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, databaseConfig, jwtConfig],
-      validationSchema: envValidationSchema,
+      load: [databaseConfig],
     }),
+    EventEmitterModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -33,13 +23,7 @@ import { RolesModule } from './modules/roles/roles.module';
     }),
     HealthModule,
     UsersModule,
-    RolesModule,
-  ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
+    AuditModule,
   ],
 })
 export class AppModule {}

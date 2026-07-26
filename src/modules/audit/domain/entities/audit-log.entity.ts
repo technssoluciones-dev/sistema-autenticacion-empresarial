@@ -65,6 +65,6 @@ export class AuditLog extends AggregateRoot<AuditLogProps> {
   }
 
   get createdAt(): Date {
-    return this.props.createdAt;
+    return this.props.createdAt!;
   }
 }
