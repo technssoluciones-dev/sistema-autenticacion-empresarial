@@ -1,4 +1,3 @@
-
 import { Module } from '@nestjs/common';
 import { CreateRoleUseCase } from './application/use-cases/create-role.use-case';
 import { ROLE_REPOSITORY } from './domain/repositories/role.repository.interface';

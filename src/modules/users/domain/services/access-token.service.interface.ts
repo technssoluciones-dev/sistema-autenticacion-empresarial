@@ -1,4 +1,3 @@
-
 export const ACCESS_TOKEN_SERVICE = 'ACCESS_TOKEN_SERVICE';
 
 export interface AccessTokenPayload {

@@ -1,4 +1,3 @@
-
 export const TOKEN_HASHER = 'TOKEN_HASHER';
 
 export interface TokenHasher {

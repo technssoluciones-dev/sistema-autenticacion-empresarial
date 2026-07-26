@@ -1,4 +1,3 @@
-
 import { ValueObject } from '@shared/domain';
 
 interface PasswordProps {

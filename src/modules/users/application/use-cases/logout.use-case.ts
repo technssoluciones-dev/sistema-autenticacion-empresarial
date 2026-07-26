@@ -1,6 +1,8 @@
-
 import { Inject, Injectable } from '@nestjs/common';
-import { RefreshTokenRepository, REFRESH_TOKEN_REPOSITORY } from '../../domain/repositories/refresh-token.repository.interface';
+import {
+  RefreshTokenRepository,
+  REFRESH_TOKEN_REPOSITORY,
+} from '../../domain/repositories/refresh-token.repository.interface';
 import { TokenHasher, TOKEN_HASHER } from '../../domain/services/token-hasher.interface';
 import { LogoutRequest } from '../dto/logout.request';
 

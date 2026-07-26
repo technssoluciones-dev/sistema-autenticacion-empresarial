@@ -1,10 +1,11 @@
-
 import { ValueObject } from '@shared/domain/value-object';
 import { DomainException } from '@shared/domain/exceptions/domain.exception';
 
 export class InvalidPermissionNameException extends DomainException {
   constructor(name: string) {
-    super(`El nombre de permiso '${name}' es inválido. Debe seguir el formato 'modulo:accion' (ej. users:read).`);
+    super(
+      `El nombre de permiso '${name}' es inválido. Debe seguir el formato 'modulo:accion' (ej. users:read).`,
+    );
   }
 }
 

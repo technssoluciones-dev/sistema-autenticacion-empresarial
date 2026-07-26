@@ -1,4 +1,3 @@
-
 import { UniqueEntityId } from './unique-entity-id';
 import { DomainEvent } from './domain-event.interface';
 

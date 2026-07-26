@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { IRoleRepository } from '../../domain/repositories/role.repository.interface';
 import { Role } from '../../domain/entities/role.entity';
@@ -8,7 +7,9 @@ export class InMemoryRoleRepository implements IRoleRepository {
   private roles: Map<string, Role> = new Map();
 
   async findByName(name: string): Promise<Role | null> {
-    const found = Array.from(this.roles.values()).find((r) => r.name.toUpperCase() === name.toUpperCase());
+    const found = Array.from(this.roles.values()).find(
+      (r) => r.name.toUpperCase() === name.toUpperCase(),
+    );
     return found || null;
   }
 

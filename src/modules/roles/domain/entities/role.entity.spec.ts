@@ -1,4 +1,3 @@
-
 import { Role } from './role.entity';
 import { PermissionName } from '../value-objects/permission-name.vo';
 

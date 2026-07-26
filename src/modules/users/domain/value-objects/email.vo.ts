@@ -1,4 +1,3 @@
-
 import { ValueObject, InvalidValueObjectException } from '@shared/domain';
 
 export class Email extends ValueObject<{ value: string }> {

@@ -1,14 +1,10 @@
-﻿process.env.DB_HOST = 'localhost';
-process.env.DB_USERNAME = 'test';
-process.env.DB_PASSWORD = 'test';
-process.env.DB_NAME = 'test';
-process.env.JWT_ACCESS_SECRET = 'a'.repeat(32);
-process.env.JWT_REFRESH_SECRET = 'b'.repeat(32);
-
-import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
+﻿import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from './app.module';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserOrmEntity } from './modules/users/infrastructure/persistence/user.orm-entity';
+import { RefreshToken } from './modules/users/domain/entities/refresh-token.entity';
+import { Role } from './modules/roles/domain/entities/role.entity';
+import { DataSource } from 'typeorm';
 
 describe('AppModule', () => {
   let moduleRef: TestingModule;
@@ -17,17 +13,24 @@ describe('AppModule', () => {
     moduleRef = await Test.createTestingModule({
       imports: [AppModule],
     })
+      .overrideProvider(DataSource)
+      .useValue({ isInitialized: true, destroy: jest.fn() })
       .overrideProvider(getRepositoryToken(UserOrmEntity))
-      .useValue({
-        find: jest.fn(),
-        findOne: jest.fn(),
-        save: jest.fn(),
-        count: jest.fn(),
-      })
+      .useValue({})
+      .overrideProvider(getRepositoryToken(RefreshToken))
+      .useValue({})
+      .overrideProvider(getRepositoryToken(Role))
+      .useValue({})
       .compile();
+  }, 15000);
+
+  it('debería compilar el módulo correctamente', () => {
+    expect(moduleRef).toBeDefined();
   });
 
-  it('should compile the module graph', () => {
-    expect(moduleRef).toBeDefined();
+  afterAll(async () => {
+    if (moduleRef) {
+      await moduleRef.close();
+    }
   });
 });

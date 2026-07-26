@@ -1,4 +1,3 @@
-
 import { AggregateRoot, UniqueEntityId } from '@shared/domain';
 import { Email } from '../value-objects/email.vo';
 import { Password } from '../value-objects/password.vo';

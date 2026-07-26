@@ -1,10 +1,12 @@
-
 import { Inject, Injectable } from '@nestjs/common';
 import { UseCase } from '@shared/application/use-case.interface';
 import { Result } from '@shared/application/result';
 import { Role } from '../../domain/entities/role.entity';
 import { PermissionName } from '../../domain/value-objects/permission-name.vo';
-import { IRoleRepository, ROLE_REPOSITORY } from '../../domain/repositories/role.repository.interface';
+import {
+  IRoleRepository,
+  ROLE_REPOSITORY,
+} from '../../domain/repositories/role.repository.interface';
 import { CreateRoleRequestDto, RoleResponseDto } from '../dto/create-role.dto';
 
 @Injectable()
@@ -21,7 +23,7 @@ export class CreateRoleUseCase implements UseCase<CreateRoleRequestDto, Result<R
         return Result.fail(new Error(`El rol '${request.name}' ya existe.`));
       }
 
-      const permissionNameVOs = request.permissions.map((p) => PermissionName.create(p));
+      const permissionNameVOs = request.permissions.map((p: string) => PermissionName.create(p));
       const role = Role.create({
         name: request.name.toUpperCase(),
         description: request.description,

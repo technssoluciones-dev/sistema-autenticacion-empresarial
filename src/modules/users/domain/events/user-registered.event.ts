@@ -1,4 +1,3 @@
-
 import { DomainEvent } from '@shared/domain';
 
 export class UserRegisteredEvent implements DomainEvent {

@@ -1,4 +1,3 @@
-
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -35,7 +34,9 @@ async function bootstrap() {
   // 4. Configuración de Swagger
   const config = new DocumentBuilder()
     .setTitle('Enterprise Auth API')
-    .setDescription('Sistema de Autenticación Empresarial con Arquitectura Hexagonal, DDD y Hardening OWASP')
+    .setDescription(
+      'Sistema de Autenticación Empresarial con Arquitectura Hexagonal, DDD y Hardening OWASP',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();

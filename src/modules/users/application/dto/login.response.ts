@@ -1,4 +1,3 @@
-
 export class LoginResponse {
   constructor(
     public readonly accessToken: string,

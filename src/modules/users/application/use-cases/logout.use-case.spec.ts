@@ -20,7 +20,7 @@ describe('LogoutUseCase', () => {
     useCase = new LogoutUseCase(refreshTokenRepository, tokenHasher);
   });
 
-  it('debería eliminar el refresh token correctamente al cerrar sesión', async () => {
+  it('deberï¿½a eliminar el refresh token correctamente al cerrar sesiï¿½n', async () => {
     tokenHasher.hash.mockResolvedValue('hashed_token');
 
     await useCase.execute({ refreshToken: 'raw_token' });

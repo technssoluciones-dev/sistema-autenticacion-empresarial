@@ -1,14 +1,13 @@
-
 export class CreateRoleRequestDto {
-  name: string;
+  name!: string;
   description?: string;
-  permissions: string[];
+  permissions!: string[];
 }
 
 export class RoleResponseDto {
-  id: string;
-  name: string;
+  id!: string;
+  name!: string;
   description?: string;
-  permissions: string[];
-  createdAt: Date;
+  permissions!: string[];
+  createdAt!: Date;
 }

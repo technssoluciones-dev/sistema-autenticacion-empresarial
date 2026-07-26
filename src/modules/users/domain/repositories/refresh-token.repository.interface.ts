@@ -1,4 +1,3 @@
-
 import { RefreshToken } from '../entities/refresh-token.entity';
 
 export const REFRESH_TOKEN_REPOSITORY = 'REFRESH_TOKEN_REPOSITORY';

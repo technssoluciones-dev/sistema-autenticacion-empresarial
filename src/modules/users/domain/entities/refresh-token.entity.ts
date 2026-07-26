@@ -1,4 +1,3 @@
-
 import { AggregateRoot, UniqueEntityId } from '@shared/domain';
 
 export interface RefreshTokenProps {
@@ -24,9 +23,7 @@ export class RefreshToken extends AggregateRoot<RefreshTokenProps> {
   }
 
   get userId(): string {
-    return typeof this.props.userId === 'string' 
-      ? this.props.userId 
-      : this.props.userId.toString();
+    return typeof this.props.userId === 'string' ? this.props.userId : this.props.userId.toString();
   }
 
   get tokenHash(): string {

@@ -53,13 +53,13 @@ describe('Users (e2e)', () => {
   });
 
   afterAll(async () => {
-  if (dataSource && dataSource.isInitialized) {
-    await dataSource.query('TRUNCATE TABLE "users" RESTART IDENTITY CASCADE');
-  }
-  if (app) {
-    await app.close();
-  }
-});
+    if (dataSource && dataSource.isInitialized) {
+      await dataSource.query('TRUNCATE TABLE "users" RESTART IDENTITY CASCADE');
+    }
+    if (app) {
+      await app.close();
+    }
+  });
 
   it('POST /api/v1/users registra un usuario nuevo y devuelve 201 con el DTO esperado', async () => {
     const response = await request(app.getHttpServer()).post('/api/v1/users').send({

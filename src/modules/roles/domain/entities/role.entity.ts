@@ -1,4 +1,3 @@
-
 import { AggregateRoot } from '@shared/domain/aggregate-root';
 import { UniqueEntityId } from '@shared/domain/unique-entity-id';
 import { PermissionName } from '../value-objects/permission-name.vo';
@@ -24,7 +23,10 @@ export class Role extends AggregateRoot<RoleProps> {
     );
   }
 
-  public static create(props: Omit<RoleProps, 'createdAt' | 'updatedAt'>, id?: UniqueEntityId): Role {
+  public static create(
+    props: Omit<RoleProps, 'createdAt' | 'updatedAt'>,
+    id?: UniqueEntityId,
+  ): Role {
     return new Role(props, id);
   }
 
