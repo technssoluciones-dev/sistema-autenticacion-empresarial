@@ -1,49 +1,46 @@
+version: '3.8'
+
 services:
-  api:
+  app:
     build:
       context: .
-      dockerfile: docker/Dockerfile.dev
-    container_name: enterprise-auth-api
-    restart: unless-stopped
+      dockerfile: Dockerfile
+      target: production
+    container_name: enterprise_auth_app
+    restart: always
     ports:
-      - '${PORT:-3000}:3000'
-    env_file:
-      - .env
+      - "${PORT:-3000}:3000"
     environment:
+      NODE_ENV: production
+      PORT: 3000
       DB_HOST: postgres
-    volumes:
-      - ./src:/usr/src/app/src
-      - ./test:/usr/src/app/test
+      DB_PORT: 5432
+      DB_USERNAME: ${DB_USERNAME:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_DATABASE: ${DB_DATABASE:-enterprise_auth}
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_32_characters_long}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-super_secret_refresh_key_32_characters}
     depends_on:
       postgres:
         condition: service_healthy
-    networks:
-      - enterprise-auth-net
 
   postgres:
     image: postgres:16-alpine
-    container_name: enterprise-auth-db
-    restart: unless-stopped
+    container_name: enterprise_auth_db
+    restart: always
     environment:
       POSTGRES_USER: ${DB_USERNAME:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME:-enterprise_auth}
+      POSTGRES_DB: ${DB_DATABASE:-enterprise_auth}
     ports:
-      - '${DB_PORT:-5433}:5432'
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-postgres}']
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-enterprise_auth}"]
       interval: 5s
       timeout: 5s
       retries: 5
-    networks:
-      - enterprise-auth-net
 
 volumes:
   postgres_data:
-
-networks:
-  enterprise-auth-net:
-    driver: bridge
-
