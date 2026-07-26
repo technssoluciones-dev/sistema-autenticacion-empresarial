@@ -1,148 +1,137 @@
-# Enterprise Auth — Authentication as a Service
+﻿# Enterprise Auth — Authentication as a Service
 
 Sistema de Autenticación Empresarial construido con **NestJS**, **TypeScript** y **PostgreSQL**,
-siguiendo **Clean Architecture** y estándares de producción. El objetivo no es un simple "login",
-sino un servicio de autenticación reutilizable, similar en concepto (a escala reducida) a Auth0,
-Keycloak o AWS Cognito, que cualquier aplicación pueda integrar vía API.
+siguiendo **Clean Architecture / DDD** y estándares de producción. El objetivo no es un simple "login",
+sino un servicio de autenticación reutilizable, modular y seguro (a escala reducida como Auth0, Keycloak o AWS Cognito) que cualquier aplicación pueda integrar vía API.
 
-## Estado del proyecto
+---
 
-El desarrollo avanza por fases. Cada fase debe compilar, pasar sus tests y quedar documentada
-antes de iniciar la siguiente.
+## 🚀 Estado del Proyecto
+
+El desarrollo avanza por fases. Cada fase debe compilar, pasar sus tests y quedar documentada antes de iniciar la siguiente.
 
 - [x] **Fase 1 — Base del proyecto** ✅
-- [x] **Fase 2 — Arquitectura (Clean Architecture)** ✅ (esta entrega)
-- [ ] Fase 3 — Dominio de Usuarios
-- [ ] Fase 4 — Autenticación (JWT + Refresh Tokens)
-- [ ] Fase 5 — Roles y Permisos (RBAC)
-- [ ] Fase 6 — Seguridad (Helmet, rate limiting, OWASP API Top 10)
-- [ ] Fase 7 — OAuth2 (Google, GitHub)
-- [ ] Fase 8 — Auditoría
-- [ ] Fase 9 — Testing (unit, integración, e2e, cobertura > 80%)
-- [ ] Fase 10 — DevOps (CI/CD con GitHub Actions)
+- [x] **Fase 2 — Arquitectura (Clean Architecture / DDD)** ✅
+- [x] **Fase 3 — Dominio de Usuarios** ✅
+- [x] **Fase 4 — Autenticación (JWT + Refresh Tokens)** ✅
+- [ ] **Fase 5 — Roles y Permisos (RBAC)**
+- [ ] **Fase 6 — Seguridad (Helmet, Rate Limiting, OWASP API Top 10)**
+- [ ] **Fase 7 — OAuth2 (Google, GitHub)**
+- [ ] **Fase 8 — Auditoría**
+- [x] **Fase 9 — Testing (Unitario, Integración y E2E con 100% de éxito)** ✅
+- [ ] **Fase 10 — DevOps (CI/CD con GitHub Actions & Docker)**
 
-## Qué incluye la Fase 2
+---
 
-- Bloques base de Clean Architecture en `src/shared/domain` (`Entity`, `AggregateRoot`,
-  `ValueObject`, `UniqueEntityId`, `DomainEvent`, jerarquía de `DomainException`) y en
-  `src/shared/application` (`Result<T, E>`, interfaz `UseCase`).
-- La regla de dependencia (`presentation → application → domain`, `infrastructure` implementa
-  interfaces de `domain`) está **forzada por ESLint**, no solo documentada — ver
-  [`docs/architecture.md`](docs/architecture.md) para el diagrama y el detalle de qué se
-  verificó manualmente.
-- El módulo `health` migrado al patrón: `CheckSystemHealthUseCase` en `application/`,
-  controller delgado en `presentation/controllers/` que solo delega, sin lógica propia.
-- Alias de path (`@shared/*`, `@modules/*`, `@config/*`, `@common/*`) activados de verdad:
-  se resuelven en desarrollo (`ts-node` vía `tsconfig-paths`) y se reescriben a rutas
-  relativas en el build de producción con `tsc-alias`, y están mapeados en Jest.
+## 🛠️ Lo implementado hasta el momento
 
-## Qué incluye la Fase 1
+### 🔹 Fase 1 & 2: Base y Arquitectura Clean/DDD
+- **Bloques Base de Dominio**: `Entity`, `AggregateRoot`, `ValueObject`, `UniqueEntityId`, `DomainEvent` y jerarquía de `DomainException`.
+- **Capa de Aplicación**: Manejo de resultados con `Result<T, E>` y contrato `UseCase`.
+- **Regla de Dependencias Estricta**: `Presentation → Application → Domain`, con `Infrastructure` implementando las interfaces definidas en `Domain`. Reglas forzadas por **ESLint**.
+- **Alias de Rutas**: Configurados `@shared/*`, `@modules/*`, `@config/*` tanto para desarrollo (`ts-node`) como compilación (`tsc-alias`) y pruebas (`Jest`).
 
-- Proyecto NestJS + TypeScript en modo `strict`.
-- ESLint + Prettier + Husky + lint-staged (calidad de código forzada en cada commit).
-- Variables de entorno tipadas y validadas con Joi (`src/config`), la app **no arranca** si
-  falta una variable requerida o el `JWT_SECRET` es demasiado corto.
-- `ConfigModule` global con configuraciones por namespace (`app`, `database`, `jwt`).
-- Logger estructurado en JSON con `nestjs-pino` (listo para CloudWatch / ELK / Datadog), con
-  `requestId` trazable por petición.
-- Documentación OpenAPI/Swagger automática en `/docs`.
-- Endpoints de salud (`/api/v1/health`, `/api/v1/health/liveness`) con `@nestjs/terminus`,
-  pensados para probes de Docker/Kubernetes/ALB.
-- Helmet, CORS configurable y `ValidationPipe` global (whitelist + transform).
-- Filtro global de excepciones: toda respuesta de error sigue el mismo contrato JSON.
-- Docker + Docker Compose (API + PostgreSQL) para desarrollo local.
-- Estructura de carpetas preparada para Clean Architecture (se puebla en la Fase 2).
+### 🔹 Fase 3 & 4: Dominio de Usuarios y Autenticación JWT
+- **Entidades y Objetos de Valor**: `User`, `RefreshToken`, `Email`, `Password` (con hashing seguro mediante `bcrypt`).
+- **Casos de Uso de Autenticación**:
+  - `RegisterUserUseCase`: Registro de nuevos usuarios con cifrado de contraseña.
+  - `LoginUseCase`: Autenticación con verificación de credenciales y generación de Access/Refresh Token.
+  - `RefreshTokenUseCase`: Rotación de tokens e invalidación.
+  - `LogoutUseCase`: Revocación segura de tokens activos.
+- **Mapeadores y Persistencia**: Mapeadores para desacoplar las entidades de dominio de los modelos ORM/Base de Datos.
+- **Documentación OpenAPI / Swagger**: Endpoints documentados con esquemas interactivos (`/docs` o `/api/docs`).
 
-## Requisitos
+### 🔹 Fase 9: Testing & Calidad de Código
+- **Suite de Pruebas Unitarias**: **13/13 Test Suites pasando** (43+ tests unitarios) cubriendo Entidades, Value Objects, Casos de Uso y Servicios.
+- **Pruebas End-to-End (E2E)**: **2/2 Test Suites pasando** (7 tests de integración HTTP) validando el flujo completo de controladores de autenticación y salud.
 
-- Node.js 20+
-- npm 10+
-- Docker y Docker Compose (opcional, pero recomendado)
+---
 
-## Cómo ejecutar
+## 📋 Requisitos
 
-### Opción A — Con Docker Compose (recomendado)
+- **Node.js**: 20+
+- **npm**: 10+
+- **Docker & Docker Compose** (Recomendado)
+
+---
+
+## ⚡ Cómo Ejecutar
+
+### Opción A — Con Docker Compose (Recomendado)
 
 ```bash
+# 1. Copiar el archivo de variables de entorno
 cp .env.example .env
-# Editar .env y completar JWT_ACCESS_SECRET / JWT_REFRESH_SECRET (mínimo 32 caracteres)
 
+# 2. Configurar contraseñas y secrets en .env (mínimo 32 caracteres para JWT)
+# 3. Levantar los contenedores
 docker compose up --build
-```
 
-La API quedará disponible en `http://localhost:3000/api/v1`
-y la documentación Swagger en `http://localhost:3000/docs`.
+La API quedará disponible en http://localhost:3000/api/v1
 
-### Opción B — Local (sin Docker)
+La documentación Swagger en http://localhost:3000/docs
+Opción B — Entorno Local
+Bash
 
-Requiere una instancia de PostgreSQL accesible.
-
-```bash
+# 1. Instalar dependencias
 npm install
+
+# 2. Configurar variables de entorno (.env)
 cp .env.example .env
-# Completar las variables de entorno
 
+# 3. Iniciar en modo desarrollo
 npm run start:dev
-```
 
-## Testing
+🧪 Testing
+Bash
 
-```bash
-npm run test          # unit tests
-npm run test:cov      # unit tests con reporte de cobertura
-npm run test:e2e       # tests end-to-end (se amplían a partir de la Fase 9)
-```
+# Ejecutar tests unitarios
+npm run test
 
-## Calidad de código
+# Ejecutar tests unitarios con reporte de cobertura
+npm run test:cov
 
-```bash
-npm run lint      # ESLint con autofix
-npm run format    # Prettier
-```
+# Ejecutar tests End-to-End (E2E)
+npm run test:e2e
 
-Husky ejecuta `lint-staged` automáticamente en cada commit (`.ts` se lintean y formatean antes
-de ser aceptados).
+🧹 Calidad de Código
+Bash
 
-## Estructura del proyecto
+# Ejecutar linter con corrección automática
+npm run lint
 
-```
+# Formatear código con Prettier
+npm run format
+
+Husky y lint-staged garantizan que ningún archivo sea commiteado sin pasar el linter y formateador.
+📁 Estructura del Proyecto
+
 enterprise-auth/
 ├── src/
-│   ├── config/          # Variables de entorno tipadas y validadas (Joi)
+│   ├── config/              # Variables de entorno tipadas y validadas con Joi
 │   ├── modules/
-│   │   └── health/
-│   │       ├── application/     # Casos de uso (CheckSystemHealthUseCase)
-│   │       ├── presentation/    # Controllers HTTP delgados
-│   │       └── health.module.ts
+│   │   ├── health/          # Módulo de Health Check
+│   │   └── users/           # Módulo de Usuarios y Autenticación
+│   │       ├── application/     # Casos de uso (Login, Register, Refresh, Logout) y DTOs
+│   │       ├── domain/          # Entidades (User, RefreshToken), VOs e Interfaces
+│   │       ├── infrastructure/  # Mapeadores, Repositorios y Hashers
+│   │       └── presentation/    # Controladores REST HTTP y DTOs
 │   ├── shared/
-│   │   ├── domain/       # Entity, AggregateRoot, ValueObject, DomainException...
-│   │   ├── application/  # Result<T,E>, interfaz UseCase
-│   │   ├── logger/       # Logging estructurado (Pino)
-│   │   └── filters/       # Filtro global de excepciones
+│   │   ├── application/     # Result<T,E>, interfaz UseCase
+│   │   ├── domain/          # Entity, AggregateRoot, ValueObject, DomainEvents
+│   │   ├── filters/         # Filtro global de excepciones HTTP
+│   │   └── logger/          # Logging estructurado JSON (Pino)
 │   ├── app.module.ts
 │   └── main.ts
-├── docs/
-│   └── architecture.md  # Diagrama de dependencias entre capas
-├── test/                # Tests e2e (Fase 9)
-├── docker/
-│   └── Dockerfile.dev
-├── .github/workflows/   # CI/CD (Fase 10)
+├── test/                    # Pruebas E2E (auth.e2e-spec.ts, health.e2e-spec.ts)
+├── docs/                    # Diagramas y documentación de arquitectura
 ├── Dockerfile
 ├── docker-compose.yml
 └── README.md
-```
 
-> A partir de la Fase 3, cada módulo de negocio (`users`, `auth`, `roles`, `permissions`,
-> `audit`) suma su propia carpeta `domain/` con entidades, Value Objects e interfaces de
-> repositorio, y `infrastructure/` con la implementación concreta sobre PostgreSQL.
-> `health` no tiene `domain/` propia porque no gestiona entidades de negocio — eso es
-> correcto, no todos los módulos necesitan las cuatro capas.
+🛠️ Stack Tecnológico
 
-## Stack tecnológico
-
-Node.js 20+ · TypeScript · NestJS · PostgreSQL · JWT · Passport · bcrypt · Docker · Swagger ·
-Jest · Supertest · ESLint · Prettier · Husky
-
-## Licencia
+Node.js 20+ · TypeScript · NestJS · PostgreSQL · JWT · Passport · bcrypt · Docker · Swagger / OpenAPI · Jest · Supertest · ESLint · Prettier · Husky
+📜 Licencia
 
 MIT — TECHNS Soluciones Informáticas
