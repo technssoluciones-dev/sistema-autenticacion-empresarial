@@ -13,13 +13,13 @@ El desarrollo avanza por fases. Cada fase debe compilar, pasar sus tests y queda
 - [x] **Fase 1 — Base del proyecto** ✅
 - [x] **Fase 2 — Arquitectura (Clean Architecture / DDD)** ✅
 - [x] **Fase 3 — Dominio de Usuarios** ✅
-- [x] **Fase 4 — Autenticación (JWT + Refresh Tokens)** ✅[cite: 1]
-- [ ] **Fase 5 — Roles y Permisos (RBAC)**[cite: 1]
-- [ ] **Fase 6 — Seguridad (Helmet, Rate Limiting, OWASP API Top 10)**[cite: 1]
-- [ ] **Fase 7 — OAuth2 (Google, GitHub)**[cite: 1]
-- [ ] **Fase 8 — Auditoría**[cite: 1]
-- [x] **Fase 9 — Testing (Unitario, Integración y E2E con 100% de éxito)** ✅[cite: 1]
-- [ ] **Fase 10 — DevOps (CI/CD con GitHub Actions & Docker)**[cite: 1]
+- [x] **Fase 4 — Autenticación (JWT + Refresh Tokens)** ✅
+- [x] **Fase 5 — Roles y Permisos (RBAC)** ✅
+- [x] **Fase 6 — Seguridad (Helmet, Rate Limiting, OWASP API Top 10)** ✅
+- [ ] **Fase 7 — OAuth2 (Google, GitHub)**
+- [ ] **Fase 8 — Auditoría**
+- [x] **Fase 9 — Testing (Unitario, Integración y E2E con 100% de éxito)** ✅
+- [ ] **Fase 10 — DevOps (CI/CD con GitHub Actions & Docker)**
 
 ---
 
