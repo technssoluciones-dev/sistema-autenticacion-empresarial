@@ -36,6 +36,10 @@ export class Role extends AggregateRoot<RoleProps> {
     return this.props.description;
   }
 
+  get createdAt(): Date {
+    return this.props.createdAt || new Date();
+  }
+
   get permissions(): PermissionName[] {
     return this.props.permissions;
   }
