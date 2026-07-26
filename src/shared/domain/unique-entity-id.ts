@@ -1,18 +1,14 @@
-import { randomUUID } from 'crypto';
 
-/**
- * Envuelve un identificador (UUID v4) en un tipo propio en vez de pasar
- * strings sueltos por todo el dominio. Esto evita errores como pasar un
- * `email` donde se esperaba un `userId` — el compilador lo detecta.
- */
+import { v4 as uuidv4 } from 'uuid';
+
 export class UniqueEntityId {
   private readonly value: string;
 
-  private constructor(id?: string) {
-    this.value = id ?? randomUUID();
+  constructor(id?: string) {
+    this.value = id || uuidv4();
   }
 
-  static create(id?: string): UniqueEntityId {
+  public static create(id?: string): UniqueEntityId {
     return new UniqueEntityId(id);
   }
 
@@ -20,8 +16,9 @@ export class UniqueEntityId {
     return this.value;
   }
 
-  equals(other?: UniqueEntityId): boolean {
-    if (other === null || other === undefined) return false;
-    return this.value === other.value;
+  equals(id?: UniqueEntityId): boolean {
+    if (id === null || id === undefined) return false;
+    if (!(id instanceof UniqueEntityId)) return false;
+    return id.toString() === this.value;
   }
 }
