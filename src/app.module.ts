@@ -19,6 +19,7 @@ import { AuditModule } from './modules/audit/audit.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         ...configService.get('database'),
+        autoLoadEntities: true,
       }),
     }),
     HealthModule,

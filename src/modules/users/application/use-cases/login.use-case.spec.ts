@@ -56,7 +56,7 @@ describe('LoginUseCase', () => {
     );
   });
 
-  it('deber�a autenticar correctamente y retornar tokens', async () => {
+  it('deberia autenticar correctamente y retornar tokens', async () => {
     const emailStr = 'test@example.com';
     const rawPassword = 'password123';
     const hashedPass = 'hashedPassword';
@@ -81,7 +81,7 @@ describe('LoginUseCase', () => {
     expect(refreshTokenRepository.save).toHaveBeenCalled();
   });
 
-  it('deber�a lanzar InvalidCredentialsException si el usuario no existe', async () => {
+  it('deberia lanzar InvalidCredentialsException si el usuario no existe', async () => {
     userRepository.findByEmail.mockResolvedValue(null);
 
     await expect(
