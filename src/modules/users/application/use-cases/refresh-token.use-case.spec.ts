@@ -1,4 +1,4 @@
-import { RefreshTokenUseCase } from './refresh-token.use-case';
+﻿import { RefreshTokenUseCase } from './refresh-token.use-case';
 import { User } from '../../domain/entities/user.entity';
 import { Email } from '../../domain/value-objects/email.vo';
 import { Password } from '../../domain/value-objects/password.vo';
@@ -50,14 +50,14 @@ describe('RefreshTokenUseCase', () => {
     );
   });
 
-  it('deber�a renovar los tokens exitosamente', async () => {
+  it('deberï¿½a renovar los tokens exitosamente', async () => {
     const user = User.create({
       email: Email.create('user@example.com'),
       password: Password.createFromHash('hash'),
     });
 
     const refreshToken = RefreshToken.create({
-      userId: user.id,
+      userId: user.id.toString(),
       tokenHash: 'hashed_old_token',
       expiresAt: new Date(Date.now() + 100000),
     });
@@ -76,7 +76,7 @@ describe('RefreshTokenUseCase', () => {
     expect(refreshTokenRepository.save).toHaveBeenCalled();
   });
 
-  it('deber�a lanzar InvalidRefreshTokenException si el token no existe', async () => {
+  it('deberï¿½a lanzar InvalidRefreshTokenException si el token no existe', async () => {
     tokenHasher.hash.mockResolvedValue('hashed_invalid');
     refreshTokenRepository.findByTokenHash.mockResolvedValue(null);
 
