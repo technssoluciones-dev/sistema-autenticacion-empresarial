@@ -1,5 +1,4 @@
-name: Enterprise Auth CI/CD Pipeline
-
+﻿name: Enterprise Auth CI/CD Pipeline
 on:
   push:
     branches: [ main, develop ]
@@ -8,11 +7,10 @@ on:
 
 jobs:
   lint-and-test:
-    name: Lint, Build & Test
+    name: Lint, Build & Test Unitarios
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout del código
+      - name: Checkout del codigo
         uses: actions/checkout@v4
 
       - name: Configurar Node.js
@@ -27,19 +25,64 @@ jobs:
       - name: Validar Linter (ESLint)
         run: npm run lint
 
-      - name: Probar compilación (TypeScript Build)
+      - name: Probar compilacion (TypeScript Build)
         run: npm run build
 
       - name: Ejecutar Tests Unitarios
         run: npm run test
 
-  docker-build:
-    name: Build Docker Image
+  e2e-test:
+    name: Tests E2E (con Postgres real)
     needs: lint-and-test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: enterprise_auth
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d enterprise_auth"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: enterprise_auth
+      DB_SYNC: true
+      JWT_SECRET: ci_test_jwt_secret_32_characters_min
+      JWT_REFRESH_SECRET: ci_test_refresh_secret_32_characters
+
     steps:
-      - name: Checkout del código
+      - name: Checkout del codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar Tests E2E
+        run: npm run test:e2e
+
+  docker-build:
+    name: Build Docker Image
+    needs: [lint-and-test, e2e-test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del codigo
         uses: actions/checkout@v4
 
       - name: Configurar Docker Buildx
@@ -52,3 +95,4 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: enterprise-auth:latest
+
