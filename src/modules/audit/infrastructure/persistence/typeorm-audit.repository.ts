@@ -33,7 +33,7 @@ export class TypeOrmAuditRepository implements IAuditRepository {
       skip: offset,
       order: { createdAt: 'DESC' },
     });
-    return records.map(r => this.toDomain(r));
+    return records.map((r) => this.toDomain(r));
   }
 
   async findByUserId(userId: string): Promise<AuditLog[]> {
@@ -41,7 +41,7 @@ export class TypeOrmAuditRepository implements IAuditRepository {
       where: { userId },
       order: { createdAt: 'DESC' },
     });
-    return records.map(r => this.toDomain(r));
+    return records.map((r) => this.toDomain(r));
   }
 
   private toDomain(orm: AuditLogOrmEntity): AuditLog {

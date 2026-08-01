@@ -17,7 +17,7 @@ El desarrollo avanza por fases. Cada fase debe compilar, pasar sus tests y queda
 - [x] **Fase 5 — Roles y Permisos (RBAC)** ✅
 - [x] **Fase 6 — Seguridad (Helmet, Rate Limiting, OWASP API Top 10)** ✅
 - [ ] **Fase 7 — OAuth2 (Google, GitHub)**
-- [ ] **Fase 8 — Auditoría**
+- [x] **Fase 8 — Auditoría** ✅
 - [x] **Fase 9 — Testing (Unitario, Integración y E2E con 100% de éxito)** ✅
 - [ ] **Fase 10 — DevOps (CI/CD con GitHub Actions & Docker)**
 

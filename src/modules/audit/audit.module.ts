@@ -6,9 +6,7 @@ import { AUDIT_REPOSITORY } from './domain/repositories/audit.repository.interfa
 import { AuditEventListener } from './application/listeners/audit-event.listener';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([AuditLogOrmEntity]),
-  ],
+  imports: [TypeOrmModule.forFeature([AuditLogOrmEntity])],
   providers: [
     AuditEventListener,
     {

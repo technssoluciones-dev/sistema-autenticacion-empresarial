@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
-import { AuditAction, AuditStatus } from '../../domain/entities/audit-log.entity';
+﻿import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { AuditAction, AuditStatus, AuditDetails } from '../../domain/entities/audit-log.entity';
 
 @Entity('audit_logs')
 export class AuditLogOrmEntity {
@@ -22,7 +22,7 @@ export class AuditLogOrmEntity {
   userAgent?: string;
 
   @Column({ type: 'jsonb', nullable: true })
-  details?: Record<string, any>;
+  details?: AuditDetails;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt!: Date;

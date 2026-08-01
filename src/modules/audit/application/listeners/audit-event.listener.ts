@@ -1,7 +1,15 @@
-import { Injectable, Inject } from '@nestjs/common';
+﻿import { Injectable, Inject } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { AuditLog, AuditAction, AuditStatus } from '../../domain/entities/audit-log.entity';
-import { AUDIT_REPOSITORY, IAuditRepository } from '../../domain/repositories/audit.repository.interface';
+import {
+  AuditLog,
+  AuditAction,
+  AuditStatus,
+  AuditDetails,
+} from '../../domain/entities/audit-log.entity';
+import {
+  AUDIT_REPOSITORY,
+  IAuditRepository,
+} from '../../domain/repositories/audit.repository.interface';
 
 export class AuthEvent {
   constructor(
@@ -10,7 +18,7 @@ export class AuthEvent {
     public readonly userId?: string,
     public readonly ipAddress?: string,
     public readonly userAgent?: string,
-    public readonly details?: Record<string, any>,
+    public readonly details?: AuditDetails,
   ) {}
 }
 

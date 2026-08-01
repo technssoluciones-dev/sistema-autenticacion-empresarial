@@ -29,7 +29,7 @@ describe('AppModule', () => {
     moduleRef = await builder.compile();
   }, 15000);
 
-  it('debería compilar el módulo correctamente', () => {
+  it('deberï¿½a compilar el mï¿½dulo correctamente', () => {
     expect(moduleRef).toBeDefined();
   });
 

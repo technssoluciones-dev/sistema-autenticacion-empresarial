@@ -1,4 +1,4 @@
-import { AggregateRoot } from '@shared/domain/aggregate-root';
+﻿import { AggregateRoot } from '@shared/domain/aggregate-root';
 import { UniqueEntityId } from '@shared/domain/unique-entity-id';
 
 export enum AuditAction {
@@ -15,13 +15,15 @@ export enum AuditStatus {
   FAILURE = 'FAILURE',
 }
 
+export type AuditDetails = Record<string, unknown>;
+
 export interface AuditLogProps {
   userId?: string;
   action: AuditAction;
   status: AuditStatus;
   ipAddress?: string;
   userAgent?: string;
-  details?: Record<string, any>;
+  details?: AuditDetails;
   createdAt?: Date;
 }
 
@@ -60,7 +62,7 @@ export class AuditLog extends AggregateRoot<AuditLogProps> {
     return this.props.userAgent;
   }
 
-  get details(): Record<string, any> | undefined {
+  get details(): AuditDetails | undefined {
     return this.props.details;
   }
 
