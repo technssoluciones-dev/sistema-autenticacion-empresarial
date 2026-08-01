@@ -19,7 +19,7 @@ El desarrollo avanza por fases. Cada fase debe compilar, pasar sus tests y queda
 - [ ] **Fase 7 — OAuth2 (Google, GitHub)**
 - [x] **Fase 8 — Auditoría** ✅
 - [x] **Fase 9 — Testing (Unitario, Integración y E2E con 100% de éxito)** ✅
-- [ ] **Fase 10 — DevOps (CI/CD con GitHub Actions & Docker)**
+- [x] **Fase 10 — DevOps (CI/CD con GitHub Actions & Docker)** ✅
 
 ---
 
