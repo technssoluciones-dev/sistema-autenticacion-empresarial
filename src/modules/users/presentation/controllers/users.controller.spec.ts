@@ -2,6 +2,9 @@
 import { Result } from '@shared/application';
 import { UsersController } from './users.controller';
 import { RegisterUserUseCase } from '../../application/use-cases/register-user/register-user.use-case';
+import { LoginUseCase } from '../../application/use-cases/login.use-case';
+import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.use-case';
+import { LogoutUseCase } from '../../application/use-cases/logout.use-case';
 import { RegisterUserHttpRequestDto } from '../dtos/register-user-http.request.dto';
 import { UserAlreadyExistsException } from '../../domain/exceptions/user-already-exists.exception';
 import { RegisterUserResponse } from '../../application/use-cases/register-user/register-user.response';
@@ -9,6 +12,9 @@ import { RegisterUserResponse } from '../../application/use-cases/register-user/
 describe('UsersController', () => {
   let controller: UsersController;
   let useCase: jest.Mocked<Pick<RegisterUserUseCase, 'execute'>>;
+  let loginUseCase: jest.Mocked<Pick<LoginUseCase, 'execute'>>;
+  let refreshTokenUseCase: jest.Mocked<Pick<RefreshTokenUseCase, 'execute'>>;
+  let logoutUseCase: jest.Mocked<Pick<LogoutUseCase, 'execute'>>;
 
   const dto: RegisterUserHttpRequestDto = {
     email: 'nuevo@example.com',
@@ -18,10 +24,18 @@ describe('UsersController', () => {
 
   beforeEach(async () => {
     useCase = { execute: jest.fn() };
+    loginUseCase = { execute: jest.fn() };
+    refreshTokenUseCase = { execute: jest.fn() };
+    logoutUseCase = { execute: jest.fn() };
 
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [UsersController],
-      providers: [{ provide: RegisterUserUseCase, useValue: useCase }],
+      providers: [
+        { provide: RegisterUserUseCase, useValue: useCase },
+        { provide: LoginUseCase, useValue: loginUseCase },
+        { provide: RefreshTokenUseCase, useValue: refreshTokenUseCase },
+        { provide: LogoutUseCase, useValue: logoutUseCase },
+      ],
     }).compile();
 
     controller = moduleRef.get(UsersController);

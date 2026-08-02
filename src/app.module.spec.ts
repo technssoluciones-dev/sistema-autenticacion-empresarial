@@ -1,10 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
+﻿import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
 
 import { UserOrmEntity } from './modules/users/infrastructure/persistence/user.orm-entity';
-import { RefreshToken } from './modules/users/domain/entities/refresh-token.entity';
+import { RefreshTokenOrmEntity } from './modules/users/infrastructure/persistence/refresh-token.orm-entity';
 import { Role } from './modules/roles/domain/entities/role.entity';
 import { AuditLogOrmEntity } from './modules/audit/infrastructure/persistence/audit-log.orm-entity';
 
@@ -19,7 +19,7 @@ describe('AppModule', () => {
       .useValue({ isInitialized: true, destroy: jest.fn() })
       .overrideProvider(getRepositoryToken(UserOrmEntity))
       .useValue({})
-      .overrideProvider(getRepositoryToken(RefreshToken))
+      .overrideProvider(getRepositoryToken(RefreshTokenOrmEntity))
       .useValue({})
       .overrideProvider(getRepositoryToken(Role))
       .useValue({})
@@ -29,7 +29,7 @@ describe('AppModule', () => {
     moduleRef = await builder.compile();
   }, 15000);
 
-  it('deber�a compilar el m�dulo correctamente', () => {
+  it('deberia compilar el modulo correctamente', () => {
     expect(moduleRef).toBeDefined();
   });
 
