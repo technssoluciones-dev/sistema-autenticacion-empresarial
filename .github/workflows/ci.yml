@@ -42,24 +42,32 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: enterprise_auth
+          # DB del sistema (postgres), no la de la app.
+          # test-utils.ts crea y destruye DBs de test dinamicamente.
+          POSTGRES_DB: postgres
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U postgres -d enterprise_auth"
+          --health-cmd "pg_isready -U postgres"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
 
     env:
+      NODE_ENV: test
       DB_HOST: localhost
       DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
-      DB_NAME: enterprise_auth
+      # Debe contener "test" para pasar la validacion de seguridad en global-setup.ts
+      DB_NAME: enterprise_auth_test
       DB_SYNC: true
-      JWT_SECRET: ci_test_jwt_secret_32_characters_min
+      JWT_ACCESS_SECRET: ci_test_jwt_access_secret_32_characters_min
       JWT_REFRESH_SECRET: ci_test_refresh_secret_32_characters
+      JWT_ACCESS_EXPIRATION: 15m
+      JWT_REFRESH_EXPIRATION: 7d
+      THROTTLE_TTL: 60
+      THROTTLE_LIMIT: 100
 
     steps:
       - name: Checkout del codigo
@@ -95,4 +103,3 @@ jobs:
           file: ./Dockerfile
           push: false
           tags: enterprise-auth:latest
-
