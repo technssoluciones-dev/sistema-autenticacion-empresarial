@@ -1,64 +1,30 @@
 ﻿import 'reflect-metadata';
 import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { HttpExceptionFilter } from '../src/shared/filters/http-exception.filter';
+import { createIsolatedApp, closeIsolatedApp, TestContext } from './test-utils';
 
-/**
- * E2E real: levanta la app completa (incluido `DatabaseModule`) contra
- * una Postgres real â€” no hay mocks acÃ¡, a propÃ³sito. Requiere:
- *
- *   1. `docker-compose up -d postgres`
- *   2. `.env` con `DB_SYNC=true` (asÃ­ TypeORM crea la tabla `users` solo,
- *      sin necesitar migraciones todavÃ­a â€” ver nota de seguridad en
- *      `DatabaseModule`: esto NUNCA se activa en producciÃ³n, ahÃ­ queda
- *      forzado a `false` sin importar el valor de `DB_SYNC`).
- *
- * Corre con: npm run test:e2e
- */
 describe('Users (e2e)', () => {
+  let context: TestContext | undefined;
   let app: INestApplication;
   let dataSource: DataSource;
 
   beforeAll(async () => {
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
+    context = await createIsolatedApp();
+    app = context.app;
+    dataSource = context.dataSource;
 
-    app = moduleRef.createNestApplication();
+    // Ajustes adicionales específicos de esta suite
     app.setGlobalPrefix('api');
     app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-        transformOptions: { enableImplicitConversion: true },
-      }),
-    );
-    app.useGlobalFilters(new HttpExceptionFilter());
-
-    await app.init();
-
-    dataSource = moduleRef.get(DataSource);
-  });
-
-  beforeEach(async () => {
-    // Limpia la tabla entre tests para que cada uno arranque desde cero
-    // (independiente del orden, sin depender de que el test anterior
-    // haya corrido o no).
-    await dataSource.query('TRUNCATE TABLE "users" RESTART IDENTITY CASCADE');
-  });
+  }, 30000);
 
   afterAll(async () => {
-    if (dataSource && dataSource.isInitialized) {
-      await dataSource.query('TRUNCATE TABLE "users" RESTART IDENTITY CASCADE');
-    }
-    if (app) {
-      await app.close();
-    }
+    await closeIsolatedApp(context);
+  }, 30000);
+
+  beforeEach(async () => {
+    await dataSource.query('TRUNCATE TABLE "users" RESTART IDENTITY CASCADE');
   });
 
   it('POST /api/v1/users registra un usuario nuevo y devuelve 201 con el DTO esperado', async () => {
@@ -76,7 +42,6 @@ describe('Users (e2e)', () => {
       }),
     );
     expect(response.body.id).toBeDefined();
-    // El hash del password nunca debe viajar en la respuesta HTTP.
     expect(response.body.password).toBeUndefined();
     expect(response.body.passwordHash).toBeUndefined();
   });
@@ -112,7 +77,7 @@ describe('Users (e2e)', () => {
     expect(response.status).toBe(409);
   });
 
-  it('POST /api/v1/users con email invÃ¡lido devuelve 400 Bad Request (class-validator)', async () => {
+  it('POST /api/v1/users con email inválido devuelve 400 Bad Request (class-validator)', async () => {
     const response = await request(app.getHttpServer()).post('/api/v1/users').send({
       email: 'esto-no-es-un-email',
       password: 'unPasswordSeguro123',

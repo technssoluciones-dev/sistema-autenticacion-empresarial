@@ -3,10 +3,11 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
-  "testTimeout": 30000,
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
+  "globalSetup": "<rootDir>/global-setup.ts",
+  "setupFilesAfterEnv": ["<rootDir>/setup.ts"],
   "moduleNameMapper": {
     "^@modules/(.*)$": "<rootDir>/../src/modules/$1",
     "^@shared/(.*)$": "<rootDir>/../src/shared/$1",
