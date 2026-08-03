@@ -42,15 +42,9 @@ describe('Auth Controller (E2E)', () => {
     });
 
     it('debe devolver 409 si el email ya está registrado', async () => {
-      await request(app.getHttpServer())
-        .post('/api/v1/users')
-        .send(testUser)
-        .expect(201);
+      await request(app.getHttpServer()).post('/api/v1/users').send(testUser).expect(201);
 
-      return request(app.getHttpServer())
-        .post('/api/v1/users')
-        .send(testUser)
-        .expect(409);
+      return request(app.getHttpServer()).post('/api/v1/users').send(testUser).expect(409);
     });
 
     it('debe devolver 400 si falta un campo requerido', () => {
@@ -70,10 +64,7 @@ describe('Auth Controller (E2E)', () => {
 
   describe('POST /api/v1/users/login (autenticación)', () => {
     it('debe autenticar con credenciales válidas y devolver 200 con tokens', async () => {
-      await request(app.getHttpServer())
-        .post('/api/v1/users')
-        .send(testUser)
-        .expect(201);
+      await request(app.getHttpServer()).post('/api/v1/users').send(testUser).expect(201);
 
       return request(app.getHttpServer())
         .post('/api/v1/users/login')
@@ -86,10 +77,7 @@ describe('Auth Controller (E2E)', () => {
     });
 
     it('debe devolver 401 si la contraseña es incorrecta', async () => {
-      await request(app.getHttpServer())
-        .post('/api/v1/users')
-        .send(testUser)
-        .expect(201);
+      await request(app.getHttpServer()).post('/api/v1/users').send(testUser).expect(201);
 
       return request(app.getHttpServer())
         .post('/api/v1/users/login')

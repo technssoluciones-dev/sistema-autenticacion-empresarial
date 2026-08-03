@@ -1,5 +1,5 @@
 ﻿import 'reflect-metadata';
-import { INestApplication, ValidationPipe, VersioningType } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import request from 'supertest';
 import { createIsolatedApp, closeIsolatedApp, TestContext } from './test-utils';
@@ -13,10 +13,6 @@ describe('Users (e2e)', () => {
     context = await createIsolatedApp();
     app = context.app;
     dataSource = context.dataSource;
-
-    // Ajustes adicionales específicos de esta suite
-    app.setGlobalPrefix('api');
-    app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
   }, 30000);
 
   afterAll(async () => {

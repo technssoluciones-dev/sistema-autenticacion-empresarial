@@ -1,8 +1,5 @@
 import 'tsconfig-paths/register';
-import {
-  Test,
-  TestingModule,
-} from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import {
   INestApplication,
   ValidationPipe,
@@ -20,6 +17,12 @@ export interface TestContext {
   dbName: string;
 }
 
+/** Tipado mínimo para excepciones desconocidas en el filtro E2E */
+interface ExceptionLike {
+  constructor?: { name?: string };
+  message?: string;
+}
+
 /**
  * Filtro de excepciones para tests E2E.
  * Mapea excepciones de dominio a códigos HTTP y respeta las excepciones
@@ -27,7 +30,7 @@ export interface TestContext {
  */
 @Catch()
 class E2EExceptionFilter implements ExceptionFilter {
-  catch(exception: any, host: ArgumentsHost) {
+  catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
 
@@ -35,17 +38,16 @@ class E2EExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       const status = exception.getStatus();
       const res = exception.getResponse();
-      response.status(status).json(
-        typeof res === 'string'
-          ? { statusCode: status, message: res }
-          : res,
-      );
+      response
+        .status(status)
+        .json(typeof res === 'string' ? { statusCode: status, message: res } : res);
       return;
     }
 
     // ── Excepciones de dominio personalizadas ──
-    const name = exception?.constructor?.name || '';
-    const message = exception?.message || 'Internal server error';
+    const ex = exception as ExceptionLike;
+    const name = ex.constructor?.name || '';
+    const message = ex.message || 'Internal server error';
 
     const statusMap: Record<string, number> = {
       UserAlreadyExistsException: 409,
@@ -111,13 +113,10 @@ export async function createIsolatedApp(): Promise<TestContext> {
       transform: true,
     }),
   );
-  // ← Filtro E2E que respeta HttpException nativas y mapea excepciones de dominio
   app.useGlobalFilters(new E2EExceptionFilter());
   await app.init();
 
   const dataSource = moduleRef.get(DataSource);
-
-  // Sincroniza tablas (cada suite tiene su DB propia, sin race conditions)
   await dataSource.synchronize(true);
 
   return { app, dataSource, dbName };
@@ -126,9 +125,7 @@ export async function createIsolatedApp(): Promise<TestContext> {
 /**
  * Cierra la app y destruye la base de datos aislada.
  */
-export async function closeIsolatedApp(
-  context: TestContext | undefined,
-): Promise<void> {
+export async function closeIsolatedApp(context: TestContext | undefined): Promise<void> {
   if (!context) {
     console.log('⚠️  closeIsolatedApp: context es undefined, omitiendo cleanup');
     return;
@@ -136,12 +133,10 @@ export async function closeIsolatedApp(
 
   const { app, dbName } = context;
 
-  // Cierra la app primero (esto cierra también la conexión de TypeORM)
   if (app) {
     await app.close();
   }
 
-  // Conecta a postgres para dropear la DB temporal
   const adminDataSource = new DataSource({
     type: 'postgres',
     host: process.env.DB_HOST || 'localhost',
